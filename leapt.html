@@ -64,6 +64,9 @@ function train(e) {
         frameString += max_key;
         output.innerHTML = frameString;
     count++;
+    elem.src = max_key + ".png";
+        document.getElementById("placehere").appendChild(elem);
+        
     if(count == 300) {
       speak('Alexa, ask accessibility ' + frameString);
       console.log("terminated");
@@ -72,9 +75,6 @@ function train(e) {
   } 
 
         // frameString = JSON.stringify(result);
-
-        // elem.src = max_key + ".jpg";
-        // document.getElementById("placehere").appendChild(elem);
 
         // var training = "{ input: { lx: " + leftHand.pitch() + ", ly: " + leftHand.roll() + ", lz: " + leftHand.yaw();
         // training += ", rx: " + rightHand.pitch() + ", ry: " + rightHand.roll() + ", rz: " + rightHand.yaw();
