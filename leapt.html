@@ -1,0 +1,113 @@
+<html>
+<head>
+  <script src="trainingdata.js"></script>
+</head>
+<body>
+
+  <h1>LeapMotion ASL Translator</h1>
+  <div id="output"></div>
+  <div id="placehere" />
+  <input id="scriptBox" type="text" onkeypress="return train(event)" />
+</body>
+
+<script src="lib/leap-0.6.4.js"></script>
+<script src="lib/brain-0.6.3.min.js"></script>
+<script src="lib/underscore.js"></script>
+<script type="text/javascript">
+
+function speak(message) {
+  var msg = new SpeechSynthesisUtterance(message);
+  // msg.voice = speechSynthesis.getVoices().filter(function(voice) { return voice.name == 'Samantha'; })[0];
+  speechSynthesis.speak(msg);
+}
+
+var output = document.getElementById('output');
+var frameString = "";
+var leftHand, rightHand;
+var options = { enableGestures: true , loopWhileDisconnected: false};
+var elem = document.createElement("img");
+var sentence = [""];
+var net = new brain.NeuralNetwork();
+var shouldScan = true;
+
+function bothHands(frame) {
+  if (frame.hands[0] && frame.hands[1]) {
+    if (frame.hands[0].type == 'left') {
+      leftHand = frame.hands[0];
+      rightHand = frame.hands[1];
+    } else {
+      rightHand = frame.hands[0];
+      leftHand = frame.hands[1];
+    }
+  }
+
+  return leftHand && rightHand;
+}
+
+net.train(trainingSet);
+
+
+function train(e) {
+  if (e.keyCode == 13) {
+  
+    var signs = [];
+    var count = 0;
+    var controller = Leap.loop(options, function(frame) {
+      frameString = "";
+      elem.src = "";
+       if (bothHands(frame) && shouldScan) {
+        var result = net.run({lx: leftHand.pitch(), ly: leftHand.roll(), lz: leftHand.yaw(), rx: rightHand.pitch(), ry: rightHand.roll(), rz: rightHand.yaw()});
+        //console.log(result);
+    var inverted = _.invert(result);
+        var max = _.max(result);
+        var max_key = inverted[max];
+        frameString += max_key;
+        output.innerHTML = frameString;
+    count++;
+    if(count == 300) {
+      speak('Alexa, ask accessibility ' + frameString);
+      console.log("terminated");
+      controller.disconnect();
+    }
+  } 
+
+        // frameString = JSON.stringify(result);
+
+        // elem.src = max_key + ".jpg";
+        // document.getElementById("placehere").appendChild(elem);
+
+        // var training = "{ input: { lx: " + leftHand.pitch() + ", ly: " + leftHand.roll() + ", lz: " + leftHand.yaw();
+        // training += ", rx: " + rightHand.pitch() + ", ry: " + rightHand.roll() + ", rz: " + rightHand.yaw();
+        // training += " }, output: { balance: 1 }},";
+        // console.log(training);
+        //
+        // console.log(document.getElementById("scriptBox").value);
+      
+    });
+    
+  
+  }
+}
+
+// show balance
+// pay to *name* !(need alphabet)!
+// investment money
+// fly _to_ *London* from *Birmingham* in *X* days
+
+// 1 2 3 4 5 6 7 8 9 10
+// show
+
+// balance
+// pay 2 degete
+// to
+// investment
+// money
+// fly
+// from
+// in
+// cities
+// days
+
+</script>
+
+</html>

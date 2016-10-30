@@ -1,0 +1,134 @@
+<html>
+<head>
+</head>
+<body>
+
+  <h1>LeapMotion ASL Translator</h1>
+  <div id="output"></div>
+
+</body>
+
+<script src="lib/leap-0.6.4.js"></script>
+
+<script type="text/javascript">
+
+function concatData(id, data) {
+  return id + ": " + data + "<br>";
+}
+
+function getFingerName(fingerType) {
+  switch (fingerType) {
+    case 0:
+      return 'Thumb';
+    break;
+
+    case 1:
+      return 'Index';
+    break;
+
+    case 2:
+      return 'Middle';
+    break;
+
+    case 3:
+      return 'Ring';
+    break;
+
+    case 4:
+      return 'Pinky';
+    break;
+  }
+}
+
+function concatJointPosition(id, position) {
+  return id + ": " + position[0] + ", " + position[1] + ", " + position[2] + "<br>";
+}
+
+var output = document.getElementById('output');
+var frameString = "", handString = "", fingerString = "";
+var hand, finger;
+
+var leftHand, rightHand;
+
+var options = { enableGestures: true };
+
+Leap.loop(options, function(frame) {
+  frameString = "";
+  // frameString += concatData("num_hands", frame.hands.length);
+  // frameString += concatData("num_fingers", frame.fingers.length);
+  // frameString += "<br>";
+
+  if (frame.hands[0]) {
+    if (frame.hands[0].type == 'left') {
+      leftHand = frame.hands[0];
+      rightHand = frame.hands[1];
+    } else {
+      rightHand = frame.hands[0];
+      leftHand = frame.hands[1];
+    }
+
+    // if (leftHand) {
+    //   if (leftHand.palmNormal[1] > 0.9 && leftHand.grabStrength < 0.2) {
+    //     if (rightHand) {
+    //       if (rightHand.palmNormal[1] < 0.4 && rightHand.palmNormal[1] > -0.4 && rightHand.grabStrength > 0.8) {
+    //         frameString += "Credit Card";
+    //       }
+    //     }
+    //   }
+    // }
+
+    if (leftHand) {
+      if (leftHand.palmNormal[1] > 0.8) {
+        if (rightHand) {
+          if (rightHand.palmNormal[1] < -0.8)
+            // frameString += leftHand.palmNormal + "<br>";
+            // frameString += rightHand.palmNormal;
+            frameString.palmNormal
+        }
+      }
+    }
+  }
+
+  // for (var i = 0, len = frame.hands.length; i < len; i++) {
+  //   hand = frame.hands[i];
+  //   handString = concatData("hand_type", hand.type);
+  //   // handString += concatData("confidence", hand.confidence);
+  //   // handString += concatData("pinch_strength", hand.pinchStrength);
+  //   // handString += concatData("grab_wstrength", hand.grabStrength);
+  //   handString += '<br>';
+  //
+  //   // fingerString = concatJointPosition("finger_thumb_dip", hand.thumb.dipPosition);
+  //   // for (var j = 0, len2 = hand.fingers.length; j < len2; j++) {
+  //   //   finger = hand.fingers[i];
+  //   //   fingerString += concatData("finger_type", finger.type) + " (" + getFingerName(finger.type) + ") <br>";
+  //   //   fingerString += concatJointPosition("finger_dip", finger.dipPosition);
+  //   //   fingerString += concatJointPosition("finger_pip", finger.pipPosition);
+  //   //   fingerString += concatJointPosition("finger_mcp", finger.mcpPosition);
+  //   //   fingerString += "<br>";
+  //   // }
+  //
+  //   // frameString += fingerString;
+  //   frameString += handString;
+  //
+  //   if (hand.type == 'left') {
+  //     if (hand.palmNormal[1] > 0.9) {
+  //       frameString += "It's left and upside down!!! <br>";
+  //
+  //     }
+  //   }
+  //
+  //   if (hand.type == 'right') {
+  //     if (hand.palmNormal[1] < -0.8) {
+  //       frameString += "It's right and upside position!! <br>"
+  //     }
+  //   }
+  // }
+
+
+
+  output.innerHTML = frameString;
+});
+
+</script>
+
+</html>
